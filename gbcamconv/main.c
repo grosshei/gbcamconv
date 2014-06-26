@@ -37,95 +37,95 @@ static pixel_t * pixel_at (bitmap_t * bitmap, int x, int y)
 /* Write "bitmap" to a PNG file specified by "path"; returns 0 on
  success, non-zero on error. */
 
-static int save_png_to_file (bitmap_t *bitmap, const char *path)
-{
-    FILE * fp;
-    png_structp png_ptr = NULL;
-    png_infop info_ptr = NULL;
-    size_t x, y;
-    png_byte ** row_pointers = NULL;
-    /* "status" contains the return value of this function. At first
-     it is set to a value which means 'failure'. When the routine
-     has finished its work, it is set to a value which means
-     'success'. */
-    int status = -1;
-    /* The following number is set by trial and error only. I cannot
-     see where it it is documented in the libpng manual.
-     */
-    int pixel_size = 3;
-    int depth = 8;
-    
-    fp = fopen (path, "wb");
-    if (! fp) {
-        goto fopen_failed;
-    }
-    
-    png_ptr = png_create_write_struct (PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-    if (png_ptr == NULL) {
-        goto png_create_write_struct_failed;
-    }
-    
-    info_ptr = png_create_info_struct (png_ptr);
-    if (info_ptr == NULL) {
-        goto png_create_info_struct_failed;
-    }
-    
-    /* Set up error handling. */
-    
-    if (setjmp (png_jmpbuf (png_ptr))) {
-        goto png_failure;
-    }
-    
-    /* Set image attributes. */
-    
-    png_set_IHDR (png_ptr,
-                  info_ptr,
-                  bitmap->width,
-                  bitmap->height,
-                  depth,
-                  PNG_COLOR_TYPE_GRAY,
-                  PNG_INTERLACE_NONE,
-                  PNG_COMPRESSION_TYPE_DEFAULT,
-                  PNG_FILTER_TYPE_DEFAULT);
-    
-    /* Initialize rows of PNG. */
-    
-    row_pointers = png_malloc (png_ptr, bitmap->height * sizeof (png_byte *));
-    for (y = 0; y < bitmap->height; ++y) {
-        png_byte *row = png_malloc (png_ptr, sizeof (uint8_t) * bitmap->width * pixel_size);
-        row_pointers[y] = row;
-        for (x = 0; x < bitmap->width; ++x) {
-            pixel_t * pixel = pixel_at (bitmap, x, y);
-            *row++ = pixel->red;
-            *row++ = pixel->green;
-            *row++ = pixel->blue;
-        }
-    }
-    
-    /* Write the image data to "fp". */
-    
-    png_init_io (png_ptr, fp);
-    png_set_rows (png_ptr, info_ptr, row_pointers);
-    png_write_png (png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
-    
-    /* The routine has successfully written the file, so we set
-     "status" to a value which indicates success. */
-    
-    status = 0;
-    
-    for (y = 0; y < bitmap->height; y++) {
-        png_free (png_ptr, row_pointers[y]);
-    }
-    png_free (png_ptr, row_pointers);
-    
-png_failure:
-png_create_info_struct_failed:
-    png_destroy_write_struct (&png_ptr, &info_ptr);
-png_create_write_struct_failed:
-    fclose (fp);
-fopen_failed:
-    return status;
-}
+//static int save_png_to_file (bitmap_t *bitmap, const char *path)
+//{
+//    FILE * fp;
+//    png_structp png_ptr = NULL;
+//    png_infop info_ptr = NULL;
+//    size_t x, y;
+//    png_byte ** row_pointers = NULL;
+//    /* "status" contains the return value of this function. At first
+//     it is set to a value which means 'failure'. When the routine
+//     has finished its work, it is set to a value which means
+//     'success'. */
+//    int status = -1;
+//    /* The following number is set by trial and error only. I cannot
+//     see where it it is documented in the libpng manual.
+//     */
+//    int pixel_size = 3;
+//    int depth = 8;
+//
+//    fp = fopen (path, "wb");
+//    if (! fp) {
+//        goto fopen_failed;
+//    }
+//
+//    png_ptr = png_create_write_struct (PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+//    if (png_ptr == NULL) {
+//        goto png_create_write_struct_failed;
+//    }
+//
+//    info_ptr = png_create_info_struct (png_ptr);
+//    if (info_ptr == NULL) {
+//        goto png_create_info_struct_failed;
+//    }
+//
+//    /* Set up error handling. */
+//
+//    if (setjmp (png_jmpbuf (png_ptr))) {
+//        goto png_failure;
+//    }
+//
+//    /* Set image attributes. */
+//
+//    png_set_IHDR (png_ptr,
+//                  info_ptr,
+//                  bitmap->width,
+//                  bitmap->height,
+//                  depth,
+//                  PNG_COLOR_TYPE_GRAY,
+//                  PNG_INTERLACE_NONE,
+//                  PNG_COMPRESSION_TYPE_DEFAULT,
+//                  PNG_FILTER_TYPE_DEFAULT);
+//
+//    /* Initialize rows of PNG. */
+//
+//    row_pointers = png_malloc (png_ptr, bitmap->height * sizeof (png_byte *));
+//    for (y = 0; y < bitmap->height; ++y) {
+//        png_byte *row = png_malloc (png_ptr, sizeof (uint8_t) * bitmap->width * pixel_size);
+//        row_pointers[y] = row;
+//        for (x = 0; x < bitmap->width; ++x) {
+//            pixel_t * pixel = pixel_at (bitmap, x, y);
+//            *row++ = pixel->red;
+//            *row++ = pixel->green;
+//            *row++ = pixel->blue;
+//        }
+//    }
+//
+//    /* Write the image data to "fp". */
+//
+//    png_init_io (png_ptr, fp);
+//    png_set_rows (png_ptr, info_ptr, row_pointers);
+//    png_write_png (png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
+//
+//    /* The routine has successfully written the file, so we set
+//     "status" to a value which indicates success. */
+//
+//    status = 0;
+//
+//    for (y = 0; y < bitmap->height; y++) {
+//        png_free (png_ptr, row_pointers[y]);
+//    }
+//    png_free (png_ptr, row_pointers);
+//
+//png_failure:
+//png_create_info_struct_failed:
+//    png_destroy_write_struct (&png_ptr, &info_ptr);
+//png_create_write_struct_failed:
+//    fclose (fp);
+//fopen_failed:
+//    return status;
+//}
 
 /* Given "value" and "max", the maximum value which we expect "value"
  to take, this returns an integer between 0 and 255 proportional to
@@ -139,9 +139,9 @@ static int pix (int value, int max)
 }
 
 //128 × 112
-#define GBPIC_WIDTH 128u
-#define GBPIC_HEIGHT 112u
-#define GBPIC_DEPTH 8
+#define GBPIC_WIDTH 128
+#define GBPIC_HEIGHT 112
+#define GBPIC_DEPTH 2
 
 typedef struct {
     unsigned char pixelData[8];
@@ -165,7 +165,8 @@ tile_byte proc_pixelData(unsigned char byte1, unsigned char byte2) {
         b = b >> 6;
 
         c = a | b;
-        tile.pixelData[i] = greyscale[c];
+//        tile.pixelData[i] = greyscale[c];
+        tile.pixelData[i] = ( c ^ 0x03 ); //tile data is inverse of what png expects
 
 //        printf("%x %x | %u %u\n", byte1, byte2, a, b);
 
@@ -228,7 +229,7 @@ int foo(){
 
 //    unsigned char greyscale[] = {0xFF, 0xAA, 0x55, 0x00};
 
-    size_t savefilep = 0xa000;
+    size_t savefilep = 0x2000;
     unsigned char byte1, byte2;
 
     png_bytepp row_pointers = png_malloc (png, GBPIC_HEIGHT * sizeof (png_byte *));
@@ -276,35 +277,15 @@ int foo(){
 
     png_init_io (png, out_file);
     png_set_rows (png, pngInfo, row_pointers);
-    png_write_png (png, pngInfo, PNG_TRANSFORM_IDENTITY, NULL);
+    png_write_png (png, pngInfo, PNG_TRANSFORM_PACKING, NULL);
+//    png_write_png(png, pngInfo, PNG_TRANSFORM_IDENTITY, NULL);
 
     return 0;
 }
 
 int main ()
 {
-    bitmap_t fruit;
-    int x;
-    int y;
-    
-    /* Create an image. */
-    
-    fruit.width = 100;
-    fruit.height = 100;
-    
-    fruit.pixels = calloc (sizeof (pixel_t), fruit.width * fruit.height);
-    
-    for (y = 0; y < fruit.height; y++) {
-        for (x = 0; x < fruit.width; x++) {
-            pixel_t * pixel = pixel_at (& fruit, x, y);
-            pixel->red = pix (x, fruit.width);
-            pixel->green = pix (y, fruit.height);
-        }
-    }
-    
-    /* Write the image to a file 'fruit.png'. */
-    
-//    save_png_to_file (& fruit, "fruit.png");
+
 
     foo();
 
