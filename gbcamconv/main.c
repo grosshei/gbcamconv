@@ -1,7 +1,5 @@
 #include <png.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -53,13 +51,11 @@ int imageAtAddressToFilePath(size_t image_address, char *out_path) {
     png_structp png = png_create_write_struct (PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     png_infop pngInfo = png_create_info_struct (png);
 
-
-
-    png_set_IHDR (png,                  pngInfo, GBPIC_WIDTH, GBPIC_HEIGHT, GBPIC_DEPTH,
-                  PNG_COLOR_TYPE_GRAY,
-                  PNG_INTERLACE_NONE,
-                  PNG_COMPRESSION_TYPE_DEFAULT,
-                  PNG_FILTER_TYPE_DEFAULT);
+    png_set_IHDR(png, pngInfo, GBPIC_WIDTH, GBPIC_HEIGHT, GBPIC_DEPTH,
+        PNG_COLOR_TYPE_GRAY,
+        PNG_INTERLACE_NONE,
+        PNG_COMPRESSION_TYPE_DEFAULT,
+        PNG_FILTER_TYPE_DEFAULT);
 
     unsigned char byte1, byte2;
 
@@ -70,25 +66,16 @@ int imageAtAddressToFilePath(size_t image_address, char *out_path) {
         row_pointers[y] = row;
     }
 
-    for(int ytile = 0; ytile < 14; ytile++){
-        for(int xtile = 0; xtile < 16; xtile++){
+    for (int ytile = 0; ytile < 14; ytile++) {
+        for (int xtile = 0; xtile < 16; xtile++) {
 
-            for(int y = 0; y < 8; y++){
-//                for(int x = 0; x < 8; x += 4){
+            for (int y = 0; y < 8; y++) {
 
-                    byte1 = savedata[image_address++];
-                    byte2 = savedata[image_address++];
-                    tile_byte tile = proc_pixelData(byte1, byte2);
-
+                byte1 = savedata[image_address++];
+                byte2 = savedata[image_address++];
+                tile_byte tile = proc_pixelData(byte1, byte2);
                 memcpy(&row_pointers[(ytile * 8) + y][(xtile * 8)], &tile.pixelData, 8);
-
-//                    for(int i = 0; i < 8; i++) {
-//                        row_pointers[(ytile * 8) + y][(xtile * 8) +  i] = tile.pixelData[i];
-//                    }
-
-//                }
             }
-
         }
     }
 
@@ -102,9 +89,14 @@ int imageAtAddressToFilePath(size_t image_address, char *out_path) {
     return 0;
 }
 
-int main ()
-{
-    char *in_path = "GAMEBOYCAMERA.sav";
+int main(int argc, char *argv[]) {
+    char *in_path;
+
+    if(argc > 1) {
+        in_path = argv[1];
+    }else{
+        in_path = "GAMEBOYCAMERA.sav";
+    }
 
     //    if ((fdin = open (argv[1], O_RDONLY)) < 0)
     int fdin = open(in_path, O_RDONLY);
@@ -115,9 +107,21 @@ int main ()
     savedata = mmap(0, (size_t)statbuf.st_size, PROT_READ, MAP_SHARED, fdin, 0);
 
 
-    size_t savefilep = 0x2000;
+//    size_t savefilep = 0x2000;
 
-    imageAtAddressToFilePath(savefilep, "test.png");
+    //loop over all images 1-30
+    //0x200 - 0x1f000
+    //exit if pointer exceeds file size (truncated save file, etc)
+
+    for(size_t savefilep = 0x2000, i = 0; savefilep < statbuf.st_size && savefilep <= 0x1f000; savefilep += 0x1000, i++) {
+
+
+        char *file_path;
+        asprintf(&file_path, "out_%02zu.png", i );
+        imageAtAddressToFilePath(savefilep, file_path);
+        printf("Image %02zu @ %x saved as %s\n", (i + 1), (unsigned int)savefilep, file_path);
+
+    }
 
     return 0;
 }
