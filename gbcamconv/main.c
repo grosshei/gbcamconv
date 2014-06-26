@@ -141,7 +141,7 @@ static int pix (int value, int max)
 //128 × 112
 #define GBPIC_WIDTH 128u
 #define GBPIC_HEIGHT 112u
-#define GBPIC_DEPTH 4
+#define GBPIC_DEPTH 8
 
 typedef struct {
     unsigned char pixelData[8];
@@ -193,6 +193,8 @@ tile_byte proc_pixelData(unsigned char byte1, unsigned char byte2) {
     return tile;
 }
 
+//TODO: pack data into 4 bit for png
+
 int foo(){
     char *in_path = "GAMEBOYCAMERA.sav";
 //    FILE *in_file = fopen(in_path, "r");
@@ -226,7 +228,7 @@ int foo(){
 
 //    unsigned char greyscale[] = {0xFF, 0xAA, 0x55, 0x00};
 
-    size_t savefilep = 0x2000;
+    size_t savefilep = 0xa000;
     unsigned char byte1, byte2;
 
     png_bytepp row_pointers = png_malloc (png, GBPIC_HEIGHT * sizeof (png_byte *));
