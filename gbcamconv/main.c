@@ -16,14 +16,14 @@
 unsigned char *savedata;
 
 typedef struct {
-    unsigned char pixelData[8];
-} tile_byte;
+    unsigned char data[8];
+} tile_row;
 
 
-tile_byte proc_pixelData(unsigned char byte1, unsigned char byte2) {
+tile_row tile_bytes_to_row_data(unsigned char byte1, unsigned char byte2) {
 
     unsigned char a, b, c;
-    tile_byte tile = {};
+    tile_row tile = {};
 
     for(int i = 0 ; i < 8; i++){
 
@@ -34,7 +34,7 @@ tile_byte proc_pixelData(unsigned char byte1, unsigned char byte2) {
         b = b >> 6;
 
         c = a | b;
-        tile.pixelData[i] = ( c ^ (unsigned char)0x03 ); //tile data is inverse of what png expects
+        tile.data[i] = ( c ^ (unsigned char)0x03 ); //tile data is inverse of what png expects
 
         byte1 = byte1 << 1;
         byte2 = byte2 << 1;
@@ -44,7 +44,7 @@ tile_byte proc_pixelData(unsigned char byte1, unsigned char byte2) {
     return tile;
 }
 
-int imageAtAddressToFilePath(size_t image_address, char *out_path) {
+int save_gameboy_image(size_t image_address, char *out_path) {
 
     FILE *out_file = fopen(out_path, "wb");
 
@@ -73,13 +73,11 @@ int imageAtAddressToFilePath(size_t image_address, char *out_path) {
 
                 byte1 = savedata[image_address++];
                 byte2 = savedata[image_address++];
-                tile_byte tile = proc_pixelData(byte1, byte2);
-                memcpy(&row_pointers[(ytile * 8) + y][(xtile * 8)], &tile.pixelData, 8);
+                tile_row tile = tile_bytes_to_row_data(byte1, byte2);
+                memcpy(&row_pointers[(ytile * 8) + y][(xtile * 8)], &tile.data, 8);
             }
         }
     }
-
-    /* Write the image data to "fp". */
 
     png_init_io (png, out_file);
     png_set_rows (png, pngInfo, row_pointers);
@@ -106,21 +104,15 @@ int main(int argc, char *argv[]) {
 
     savedata = mmap(0, (size_t)statbuf.st_size, PROT_READ, MAP_SHARED, fdin, 0);
 
-
-//    size_t savefilep = 0x2000;
-
     //loop over all images 1-30
     //0x200 - 0x1f000
     //exit if pointer exceeds file size (truncated save file, etc)
 
     for(size_t savefilep = 0x2000, i = 0; savefilep < statbuf.st_size && savefilep <= 0x1f000; savefilep += 0x1000, i++) {
-
-
         char *file_path;
         asprintf(&file_path, "out_%02zu.png", i );
-        imageAtAddressToFilePath(savefilep, file_path);
+        save_gameboy_image(savefilep, file_path);
         printf("Image %02zu @ %x saved as %s\n", (i + 1), (unsigned int)savefilep, file_path);
-
     }
 
     return 0;
