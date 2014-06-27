@@ -94,8 +94,11 @@ int main(int argc, char *argv[]) {
         in_path = "GAMEBOYCAMERA.sav";
     }
 
-    //    if ((fdin = open (argv[1], O_RDONLY)) < 0)
     int fdin = open(in_path, O_RDONLY);
+    if(fdin < 0){
+        printf("Error: cannot open %s\n", in_path);
+        exit(-1);
+    }
 
     struct stat statbuf;
     fstat(fdin, &statbuf);
