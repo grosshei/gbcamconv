@@ -1,11 +1,9 @@
 #include <png.h>
 #include <stdlib.h>
-
 #include <fcntl.h>
 #include <sys/stat.h>
-
 #include <sys/mman.h>
-#import <string.h>
+#include <string.h>
 
 
 //128 × 112
@@ -112,7 +110,7 @@ int main(int argc, char *argv[]) {
         char *file_path;
         asprintf(&file_path, "out_%02zu.png", i );
         save_gameboy_image(savefilep, file_path);
-        printf("Image %02zu @ %x saved as %s\n", (i + 1), (unsigned int)savefilep, file_path);
+        printf("Image %02u @ %x saved as %s\n", (unsigned int)(i + 1), (unsigned int)savefilep, file_path);
     }
 
     return 0;
