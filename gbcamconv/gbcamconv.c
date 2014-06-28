@@ -41,47 +41,6 @@ tile_row tile_bytes_to_row_data(unsigned char byte1, unsigned char byte2) {
     return tile;
 }
 
-unsigned short interleave_bytes(unsigned char byte1, unsigned char byte2) {
-
-//  Interleave bits by Binary Magic Numbers
-//  Adapted from https://graphics.stanford.edu/~seander/bithacks.html
-
-    static const unsigned short B[] = {0x5555, 0x3333, 0x0F0F, 0x00FF};
-    static const unsigned short S[] = {1, 2, 4, 8};
-
-    unsigned short x = (unsigned short) byte1;
-    unsigned short y = (unsigned short) byte2;
-    unsigned short z; // z gets the resulting 16-bit Morton Number.
-
-    x = (x | (x << S[3])) & B[3];
-    x = (x | (x << S[2])) & B[2];
-    x = (x | (x << S[1])) & B[1];
-    x = (x | (x << S[0])) & B[0];
-
-    y = (y | (y << S[3])) & B[3];
-    y = (y | (y << S[2])) & B[2];
-    y = (y | (y << S[1])) & B[1];
-    y = (y | (y << S[0])) & B[0];
-
-    z = x | (y << 1);
-
-    return z;
-}
-
-tile_row tile_bytes_to_row_data_magic(unsigned char byte1, unsigned char byte2) {
-
-    unsigned short z = interleave_bytes(byte1, byte2);
-
-    z ^= 0xFFFF; //tile data is inverse of what png expects
-
-    tile_row tile = {};
-    unsigned short mask[] = {0xC000, 0x3000, 0xC00, 0x300, 0xC0, 0x30, 0xC, 0x3};
-    for(int i = 0; i < 8; i++){
-        tile.data[i] = (unsigned char)((z & mask[i]) >> (14 - (2 * i)));
-    }
-    return tile;
-}
-
 int save_gameboy_image(size_t image_address, char *out_path) {
 
     FILE *out_file = fopen(out_path, "wb");
@@ -109,14 +68,10 @@ int save_gameboy_image(size_t image_address, char *out_path) {
         for (int xtile = 0; xtile < 16; xtile++) {
 
             for (int y = 0; y < 8; y++) {
-
                 byte1 = savedata[image_address++];
                 byte2 = savedata[image_address++];
                 tile_row tile = tile_bytes_to_row_data(byte1, byte2);
-//                tile_row tile = tile_bytes_to_row_data_magic(byte1, byte2);
-//                unsigned short pixels = interleave_bytes(byte1, byte2) ^ 0xFFFF;
                 memcpy(&row_pointers[(ytile * 8) + y][(xtile * 8)], &tile.data, 8);
-//                memcpy(&row_pointers[(ytile * 8) + y][(xtile * 8)], &pixels, 2);
             }
         }
     }
