@@ -90,7 +90,8 @@ int main(int argc, char *argv[]) {
     if(argc > 1) {
         in_path = argv[1];
     }else{
-        in_path = "GAMEBOYCAMERA.sav";
+        printf("Usage: %s <gameboy camera save file>\n", argv[0]);
+        exit(-1);
     }
 
     int fdin = open(in_path, O_RDONLY);
