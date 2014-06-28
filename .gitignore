@@ -1,4 +1,7 @@
 *xcuserdata*
 .idea
-gbcamconv
+gbcamconv/gbcamconv
 *~
+*.png
+*.sav
+*.dSYM
