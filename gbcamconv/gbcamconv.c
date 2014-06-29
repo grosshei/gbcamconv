@@ -1,3 +1,6 @@
+#define _GNU_SOURCE
+#include <stdio.h>
+
 #include <png.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -57,9 +60,9 @@ int save_gameboy_image(size_t image_address, char *out_path) {
     unsigned char byte1, byte2;
 
     //setup pixel data structure
-    png_bytepp row_pointers = png_malloc (png, GBPIC_HEIGHT * sizeof (png_byte *));
+    png_bytepp row_pointers = png_malloc (png, GBPIC_HEIGHT * sizeof(png_byte *));
     for (int y = 0; y < GBPIC_HEIGHT; ++y) {
-        png_byte *row = png_malloc (png, sizeof (uint8_t) * GBPIC_WIDTH);
+        png_byte *row = png_malloc (png, sizeof(unsigned char) * GBPIC_WIDTH);
         row_pointers[y] = row;
     }
 
