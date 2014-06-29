@@ -24,6 +24,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1E13CE5C8F89E01183A0F3ED /* README.md */ = {isa = PBXFileReference; lastKnownFileType = file.md; path = README.md; sourceTree = "<group>"; };
 		7B2936A2195387CC000BE184 /* gbcamconv */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = gbcamconv; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B2936A5195387CC000BE184 /* gbcamconv.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = gbcamconv.c; sourceTree = "<group>"; };
 		7B2936AE19538B6E000BE184 /* libpng16.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpng16.16.dylib; path = ../../../../../../opt/local/lib/libpng16.16.dylib; sourceTree = "<group>"; };
@@ -47,6 +48,7 @@
 				7B2936AE19538B6E000BE184 /* libpng16.16.dylib */,
 				7B2936A4195387CC000BE184 /* gbcamconv */,
 				7B2936A3195387CC000BE184 /* Products */,
+				1E13CE5C8F89E01183A0F3ED /* README.md */,
 			);
 			sourceTree = "<group>";
 		};
